@@ -3,4 +3,6 @@
 /.pnp
 /.idea
 /.idea/*
+/.npmrc
+/.yarnrc
 .pnp.js
