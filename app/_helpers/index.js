@@ -1,5 +1,4 @@
-const latinizeString = require('./latinizeString').latinizeString;
-
 module.exports = {
-  latinizeString
+  stringHelpers: require('./stringHelpers'),
+  fileHelpers: require('./fileHelpers')
 };
