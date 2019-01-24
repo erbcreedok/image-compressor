@@ -1,0 +1,19 @@
+File from: [/Users/user/Desktop/githubProjs/image-compressor/app/dest/convertToJPG/eks.kavator.jpg]
+
+File to: [/Users/user/Desktop/githubProjs/image-compressor/app/dest/compressFrom/Jpegtran/eks.kavator.jpg]
+
+Compression algorithm: [-]
+
+Description: File is not exists!File from: [/Users/user/Desktop/githubProjs/image-compressor/app/dest/convertToJPG/eks.kavator.jpg]
+
+File to: [/Users/user/Desktop/githubProjs/image-compressor/app/dest/compressFrom/Jpegtran/eks.kavator.jpg]
+
+Compression algorithm: [-]
+
+Description: File is not exists!File from: [/Users/user/Desktop/githubProjs/image-compressor/app/dest/convertToJPG/eks.kavator.jpg]
+
+File to: [/Users/user/Desktop/githubProjs/image-compressor/app/dest/compressFrom/Jpegtran/eks.kavator.jpg]
+
+Compression algorithm: [-]
+
+Description: File is not exists!

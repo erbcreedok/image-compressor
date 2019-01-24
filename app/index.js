@@ -1,16 +1,7 @@
-const fs = require('fs')
-const path = require("path")
+const path = require('path')
 const distFolder = path.resolve(__dirname, './dest')
-const {convert} = require('easyimage');
+const {convert, thumbnail} = require('easyimage');
 const compress = require('compress-images');
-
-(async function a() {
-  try {
-
-  } catch (e) {
-    console.log("Error: ", e);
-  }
-})()
 
 const files = require('./getFiles').getSourceFiles()
 const {stringHelpers, fileHelpers} = require('./_helpers')
@@ -19,37 +10,71 @@ files.forEach(async ({url, fileName}) => {
   const {name} = fileHelpers.getFileNameAndExpression(fileName)
   const newName = stringHelpers.latinize(name);
   const dist = `${distFolder}/${newName}.jpg`
-  const distConvert  = `${distFolder}/covertToJPG/${newName}.jpg`
+  const distConvert  = `${distFolder}/convertToJPG/${newName}.jpg`
+  const distThumbnailFolder = `${distFolder}/thumbnailJPG`
+  const distThumbnail  = (suffix='') => `${distThumbnailFolder}/${newName}${suffix}.jpg`
   const distCompress = `${distFolder}/compressFromJPG/${newName}.jpg`
-  const distCompressBy = (method) => (`${distFolder}/compressFrom${method === 'tinify' ? '' : `${stringHelpers.capitalize(method)}/${newName}.jpg`}`)
+  const smartNamingMethos = ['tinify', 'jpegtran']
+  const distCompressBy = (method) => (`${distFolder}/compressFrom/${stringHelpers.capitalize(method)}/${smartNamingMethos.indexOf(method) !== -1 ? '' : `${newName}.jpg`}`)
   const methods = {
     tinify: {name: 'tinify', configs: {engine: 'tinify', key: 'Bud9VFPOS6lzlnpTfKbcfOVQtyOjjWnM', command: false}},
     jpegoptim: {name: 'jpegoptim', configs: {engine: 'jpegoptim', command: ['--all-progressive', '-d']}},
     jpegtran: {name: 'jpegtran', configs: {engine: 'jpegtran', command: ['-trim', '-progressive', '-copy', 'none', '-optimize']}}
   }
 
-  try {
-    const d = await convert({
-      src: url,
-      dst: distConvert,
-    })
-    console.log({d})
-  } catch(err) {
-    console.log({err})
+  const generateConvert = async () => {
+    const dist = distConvert;
+    try {
+      const d = await convert({
+        src: url,
+        dst: dist,
+      });
+      console.log('convert',{file: d})
+      return dist
+    } catch(err) {
+      console.log('convert',err)
+      return url
+    }
   }
 
-  [methods.jpegoptim, methods.jpegtran].forEach(m => {
-    compress(distConvert,
-      distCompressBy(m.name),
-      {compress_force: false, statistic: true, autoupdate: m.name!=='jpegtran'},
-      false,
-      {jpg: m.configs},
-      {png: {engine: false, command: false}},
-      {svg: {engine: false, command: false}},
-      {gif: {engine: false, command: false}},
-      function (...data) {
-        console.log(data);
+  const generateThumbnail = async (height, width, suffix='') => {
+    const dist = distThumbnail(suffix)
+    try {
+      const d = await thumbnail({
+        src: distConvert,
+        dst: dist,
+        height,
+        width
       });
+      console.log('thumbnail', {type: suffix, file:d});
+      return dist
+    } catch(err) {
+      console.log('thumbnail',err)
+      return distConvert
+    }
+  }
+
+  const converts = await generateConvert()
+
+  const thumbs = await Promise.all([generateThumbnail(130,130,'-thumb'),generateThumbnail(260,260,'-thumb@2x'),generateThumbnail(400,400,'-view')])
+
+  const toCompress = [converts, ...thumbs];
+
+  toCompress.forEach(thumb => {
+    console.log(thumb);
+    [methods.jpegtran, methods.tinify, methods.jpegoptim].forEach(m => {
+      compress(thumb,
+        distCompressBy(m.name),
+        {compress_force: false, statistic: true, autoupdate: m.name!=='jpegtran'},
+        false,
+        {jpg: m.configs},
+        {png: {engine: false, command: false}},
+        {svg: {engine: false, command: false}},
+        {gif: {engine: false, command: false}},
+        function (...data) {
+          console.log(data);
+        });
+    });
   });
 });
 
