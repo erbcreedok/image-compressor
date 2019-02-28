@@ -1,6 +1,6 @@
 const path = require('path')
 const distFolder = path.resolve(__dirname, './dest')
-const {convert, thumbnail} = require('easyimage');
+const {convert, resize, thumbnail} = require('easyimage');
 const compress = require('compress-images');
 
 const files = require('./getFiles').getSourceFiles()
@@ -37,14 +37,14 @@ files.forEach(async ({url, fileName}) => {
     }
   }
 
-  const generateThumbnail = async (height, width, suffix='') => {
+  const generateThumbnail = async (height, suffix='') => {
     const dist = distThumbnail(suffix)
     try {
-      const d = await thumbnail({
+      const d = await resize({
         src: distConvert,
         dst: dist,
         height,
-        width
+        width: height
       });
       console.log('thumbnail', {type: suffix, file:d});
       return dist
@@ -54,28 +54,11 @@ files.forEach(async ({url, fileName}) => {
     }
   }
 
+
   const converts = await generateConvert()
 
-  const thumbs = await Promise.all([generateThumbnail(130,130,'-thumb'),generateThumbnail(260,260,'-thumb@2x'),generateThumbnail(400,400,'-view')])
+  const thumbs = await Promise.all([generateThumbnail(130,'-thumb'),generateThumbnail(260,'-thumb@2x'),generateThumbnail(400,'-view')])
 
-  const toCompress = [converts, ...thumbs];
-
-  toCompress.forEach(thumb => {
-    console.log(thumb);
-    [methods.jpegtran, methods.tinify, methods.jpegoptim].forEach(m => {
-      compress(thumb,
-        distCompressBy(m.name),
-        {compress_force: false, statistic: true, autoupdate: m.name!=='jpegtran'},
-        false,
-        {jpg: m.configs},
-        {png: {engine: false, command: false}},
-        {svg: {engine: false, command: false}},
-        {gif: {engine: false, command: false}},
-        function (...data) {
-          console.log(data);
-        });
-    });
-  });
 });
 
 

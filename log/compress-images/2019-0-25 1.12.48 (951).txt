@@ -1,7 +1,0 @@
-File from: [/Users/user/Desktop/githubProjs/image-compressor/app/dest/convertToJPG/1.jpg]
-
-File to: [/Users/user/Desktop/githubProjs/image-compressor/app/dest/compressFrom/Jpegtran/1.jpg]
-
-Compression algorithm: [-]
-
-Description: File is not exists!
